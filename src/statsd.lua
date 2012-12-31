@@ -14,14 +14,14 @@ host = "127.0.0.1"
 port = 8125
 namespace = nil
 
-local function send_to_socket( string )
+function send_to_socket( string )
   local udp = socket.udp()
   udp:setpeername( host, port )
   udp:send( string )
   udb:close()
 end
 
-local function send( stat, delta, kind, sample_rate )
+function send( stat, delta, kind, sample_rate )
   sample_rate = sample_rate or 1
 
   if sample_rate == 1 or math.random() <= sample_rate then

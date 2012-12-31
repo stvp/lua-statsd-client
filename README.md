@@ -26,3 +26,11 @@ statsd.increment( "events", 1 )
 statsd.decrement( "events", 3 )
 ```
 
+Development
+-----------
+
+```
+% luarocks install busted
+% busted statsd_test.lua
+```
+
