@@ -8,7 +8,9 @@ Installation
 ------------
 
 ```sh
-% luarocks install statsd
+% git clone git://github.com/stvp/lua-statsd-client.git
+% cd lua-statsd-client
+% luarocks install statsd-1.0.0-1.rockspec
 ```
 
 Usage
