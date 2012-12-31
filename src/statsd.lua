@@ -18,7 +18,7 @@ function send_to_socket( string )
   local udp = socket.udp()
   udp:setpeername( host, port )
   udp:send( string )
-  udb:close()
+  udp:close()
 end
 
 function send( stat, delta, kind, sample_rate )
