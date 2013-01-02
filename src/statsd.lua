@@ -68,14 +68,19 @@ function timer( stat, ms )
 end
 
 -- A histogram is a measure of the distribution of timer values over time,
--- calculated by the statsd server.
+-- calculated by the statsd server. Not supported by all statsd implementations.
 function histogram( stat, value )
   send( stat, value, "h" )
 end
 
 -- A meter measures the rate of events over time, calculated by the Statsd
--- server.
+-- server. Not supported by all statsd implementations.
 function meter( stat, value )
   send( stat, value, "m" )
 end
 
+-- A set counts unique occurrences of events between flushes. Not supported by
+-- all statsd implementations.
+function set( stat, value )
+  send( stat, value, "s" )
+end
