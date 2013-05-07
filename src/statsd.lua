@@ -87,10 +87,6 @@ return function(options)
   local port = options.port or 8125
   local namespace = options.namespace or nil
 
-  print(host)
-  print(port)
-  print(namespace)
-
   local udp = socket.udp()
   udp:setpeername(host, port)
 
