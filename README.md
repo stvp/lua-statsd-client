@@ -8,14 +8,8 @@ Installation
 ------------
 
 ```sh
-% luarocks install statsd
-```
-
-Or:
-
-```sh
-% wget https://raw.github.com/stvp/lua-statsd-client/master/statsd-1.0.0-1.rockspec
-% luarocks install luarocks install statsd-1.0.0-1.rockspec
+% wget https://raw.github.com/stvp/lua-statsd-client/master/statsd-2.0.0-1.rockspec
+% luarocks install luarocks install statsd-2.0.0-1.rockspec
 ```
 
 Usage
@@ -31,7 +25,6 @@ local statsd = Statsd({
   port = 8888 -- default: 8125
   namespace = "mysite.stats" -- default: none
 })
-
 
 statsd.gauge( "users", #my_users_table )
 statsd.counter( "events", 5 )
