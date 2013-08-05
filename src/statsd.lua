@@ -17,15 +17,15 @@ local function send(self, stat, delta, kind, sample_rate)
 
   if sample_rate == 1 or math.random() <= sample_rate then
     -- Build prefix
-    prefix = ""
+    local prefix = ""
 
     if self.namespace ~= nil then prefix = self.namespace.."." end
 
     -- Escape the stat name
-    stat = stat:gsub(":", "_"):gsub("|", "_"):gsub("@", "_")
+    stat = stat:gsub("[:|@]", "_")
 
     -- Append the sample rate
-    rate = ""
+    local rate = ""
 
     if sample_rate ~= 1 then rate = "|@"..sample_rate end
 
@@ -47,12 +47,12 @@ end
 
 -- Increment a counter by `value`.
 local function increment(self, stat, value, sample_rate)
-  self:counter(stat, value, sample_rate)
+  self:counter(stat, value or 1, sample_rate)
 end
 
 -- Decrement a counter by `value`.
 local function decrement(self, stat, value, sample_rate)
-  self:counter(stat, -value, sample_rate)
+  self:counter(stat, -(value or 1), sample_rate)
 end
 
 -- A timer is a measure of the number of milliseconds elapsed between a start
