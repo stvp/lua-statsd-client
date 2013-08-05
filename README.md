@@ -26,13 +26,13 @@ local statsd = Statsd({
   namespace = "mysite.stats" -- default: none
 })
 
-statsd.gauge( "users", #my_users_table )
-statsd.counter( "events", 5 )
-statsd.increment( "events", 1 )
-statsd.decrement( "events", 3 )
-statsd.timer( "page_render", 105 )
-statsd.histogram( "page_render_time", 105 )
-statsd.meter( "page_load", 1 )
+statsd:gauge( "users", #my_users_table )
+statsd:counter( "events", 5 )
+statsd:increment( "events", 1 )
+statsd:decrement( "events", 3 )
+statsd:timer( "page_render", 105 )
+statsd:histogram( "page_render_time", 105 )
+statsd:meter( "page_load", 1 )
 ```
 
 Development
