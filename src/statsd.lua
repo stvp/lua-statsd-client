@@ -12,25 +12,43 @@ local function send_to_socket(self, string)
   self.udp:send(string)
 end
 
+local function make_statsd_message(self, stat, delta, kind, sample_rate)
+  -- Build prefix
+  local prefix = ""
+
+  if self.namespace ~= nil then prefix = self.namespace.."." end
+
+  -- Escape the stat name
+  stat = stat:gsub("[:|@]", "_")
+
+  -- Append the sample rate
+  local rate = ""
+
+  if sample_rate ~= 1 then rate = "|@"..sample_rate end
+
+  return prefix..stat..":"..delta.."|"..kind..rate
+end
+
 local function send(self, stat, delta, kind, sample_rate)
+  local msg
+  local stat_type = type(stat)
+  if stat_type == 'table' then sample_rate = delta end
   sample_rate = sample_rate or 1
-
-  if sample_rate == 1 or math.random() <= sample_rate then
-    -- Build prefix
-    local prefix = ""
-
-    if self.namespace ~= nil then prefix = self.namespace.."." end
-
-    -- Escape the stat name
-    stat = stat:gsub("[:|@]", "_")
-
-    -- Append the sample rate
-    local rate = ""
-
-    if sample_rate ~= 1 then rate = "|@"..sample_rate end
-
-    self:send_to_socket(prefix..stat..":"..delta.."|"..kind..rate)
+  if not (sample_rate == 1 or math.random() <= sample_rate) then
+    return
   end
+
+  if stat_type == 'table' then
+    local t = {}
+    for s, v in pairs(stat) do
+      table.insert(t, (make_statsd_message(self, s, v, kind, sample_rate)))
+    end
+    msg = table.concat(t, "\n")
+    -- @todo check max udp packet size
+  else
+    msg = make_statsd_message(self, stat, delta, kind, sample_rate)
+  end
+  self:send_to_socket(msg)
 end
 
 -- Record an instantaneous measurement. It's different from a counter in that

@@ -1,8 +1,14 @@
-local Statsd = require "../src/statsd"
+local Statsd = require "statsd"
 local statsd = nil
 
 function assert_udp_received(string)
   assert.equal(statsd.sent_with, string)
+end
+
+function assert_udp_received_multipe(value1, value2)
+  local flag = (statsd.sent_with == value1 .. '\n' .. value2) 
+            or (statsd.sent_with == value2 .. '\n' .. value1)
+  assert.is_true(flag)
 end
 
 before_each(function()
@@ -19,6 +25,14 @@ describe("gauge", function()
   it("sets a simple gauge", function()
     statsd:gauge("foo", 10)
     assert_udp_received("foo:10|g")
+  end)
+
+  it("sets a multiple gauge", function()
+    statsd:gauge{
+      foo = 10;
+      boo = 20;
+    }
+    assert_udp_received_multipe("foo:10|g", "boo:20|g")
   end)
 
   it("sets a gauge with a namespace", function()
@@ -55,6 +69,14 @@ describe("counter", function()
     statsd:counter("neat", -5)
     assert_udp_received("neat:-5|c")
   end)
+
+  it("counts multiple", function()
+    statsd:counter{
+      foo = 5;
+      boo = -10;
+    }
+    assert_udp_received_multipe("foo:5|c", "boo:-10|c")
+  end)
 end)
 
 describe("increment", function()
@@ -66,6 +88,11 @@ describe("increment", function()
   it("increments by one", function()
     statsd:increment("neat")
     assert_udp_received("neat:1|c")
+  end)
+
+  it("increments multiple", function()
+    statsd:increment{foo = 5;boo = 10;}
+    assert_udp_received_multipe("foo:5|c", "boo:10|c")
   end)
 end)
 
@@ -84,6 +111,14 @@ describe("timer", function()
   it("records a timer", function()
     statsd:timer("cool", 125.3)
     assert_udp_received("cool:125.3|ms")
+  end)
+
+  it("records a multiple timers", function()
+    statsd:timer{
+      t1 = 125.3;
+      t2 = 321.4;
+    }
+    assert_udp_received_multipe("t1:125.3|ms","t2:321.4|ms")
   end)
 end)
 
