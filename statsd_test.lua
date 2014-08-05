@@ -18,6 +18,7 @@ before_each(function()
   --stub send_to_socket
   statsd.send_to_socket = function(self, string)
     self.sent_with = string
+    return #string
   end
 end)
 
@@ -77,6 +78,16 @@ describe("counter", function()
     }
     assert_udp_received_multipe("foo:5|c", "boo:-10|c")
   end)
+
+  it("counts array", function()
+    statsd:counter{"foo","boo"}
+    assert_udp_received_multipe("foo:1|c", "boo:1|c")
+  end)
+
+  it("counts array no value", function()
+    statsd:counter({"foo","boo"}, 10)
+    assert_udp_received_multipe("foo:1|c|@10", "boo:1|c|@10")
+  end)
 end)
 
 describe("increment", function()
@@ -94,6 +105,16 @@ describe("increment", function()
     statsd:increment{foo = 5;boo = 10;}
     assert_udp_received_multipe("foo:5|c", "boo:10|c")
   end)
+
+  it("increments array", function()
+    statsd:increment{"foo", "boo"}
+    assert_udp_received_multipe("foo:1|c", "boo:1|c")
+  end)
+
+  it("increments array no value", function()
+    statsd:increment({"foo", "boo"}, 10)
+    assert_udp_received_multipe("foo:1|c|@10", "boo:1|c|@10")
+  end)
 end)
 
 describe("decrement", function()
@@ -101,10 +122,27 @@ describe("decrement", function()
     statsd:decrement("neat", 5)
     assert_udp_received("neat:-5|c")
   end)
+
   it("decrements down by one", function()
     statsd:decrement("neat")
     assert_udp_received("neat:-1|c")
   end)
+
+  it("decrements multiple", function()
+    statsd:decrement{foo = 5;boo = 10;}
+    assert_udp_received_multipe("foo:-5|c", "boo:-10|c")
+  end)
+
+  it("decrements array", function()
+    statsd:decrement{"foo", "boo"}
+    assert_udp_received_multipe("foo:-1|c", "boo:-1|c")
+  end)
+
+  it("decrements array no value", function()
+    statsd:decrement({"foo", "boo"}, 10)
+    assert_udp_received_multipe("foo:-1|c|@10", "boo:-1|c|@10")
+  end)
+
 end)
 
 describe("timer", function()
