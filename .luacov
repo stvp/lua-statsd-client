@@ -1,0 +1,11 @@
+return {
+  statsfile   = "luacov.stats.out";
+  reportfile  = "luacov.report.json";
+  include     = {};
+  exclude     = {};
+  coveralls   = {
+    pathcorrect = {
+      {"/usr/local/share/lua/5.[12]", "src"}
+    }
+  }
+}

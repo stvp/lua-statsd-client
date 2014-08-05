@@ -1,0 +1,32 @@
+language: c
+
+env:
+  global:
+    - LUAROCKS=2.2.0beta1
+  matrix:
+    - LUA=lua5.1
+    - LUA=lua5.2
+    - LUA=luajit
+
+branches:
+  only:
+    - master
+
+before_install:
+  - bash .travis/setup_lua.sh
+  - sudo luarocks install busted
+  - sudo luarocks install luacov-coveralls --server=http://rocks.moonscript.org/dev
+
+install:
+  - sudo luarocks make statsd-2.0.0-1.rockspec
+
+script: 
+  - busted -c statsd_test.lua
+
+after_success:
+  - luacov-coveralls -i statsd
+
+notifications:
+  email:
+    on_success: change
+    on_failure: always
