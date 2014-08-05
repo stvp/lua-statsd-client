@@ -16,10 +16,9 @@ before_install:
   - bash .travis/setup_lua.sh
   - sudo luarocks install busted
   - sudo luarocks install luacov-coveralls --server=http://rocks.moonscript.org/dev
-  - sudo luarocks install luasocket
 
 install:
-  # - sudo luarocks make statsd-2.0.0-1.rockspec
+  - sudo luarocks make statsd-2.0.0-1.rockspec
 
 script: 
   - busted -c statsd_test.lua
