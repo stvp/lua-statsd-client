@@ -8,8 +8,8 @@ Installation
 ------------
 
 ```sh
-% wget https://raw.github.com/stvp/lua-statsd-client/master/statsd-2.0.0-1.rockspec
-% luarocks install luarocks install statsd-2.0.0-1.rockspec
+% wget https://raw.github.com/stvp/lua-statsd-client/master/rockspecs/statsd-2.0.0-1.rockspec
+% luarocks install statsd-2.0.0-1.rockspec
 ```
 
 Usage
@@ -40,6 +40,6 @@ Development
 
 ```
 % luarocks install busted
-% busted statsd_test.lua
+% busted spec
 ```
 
