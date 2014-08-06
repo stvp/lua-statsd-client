@@ -182,3 +182,31 @@ describe("escape characters", function()
     assert_udp_received("c_o_o_l:99|m")
   end)
 end)
+
+describe("split too large datagram", function()
+  before_each(function()
+    statsd = nil
+    statsd = Statsd()
+
+    --stub send_to_socket
+    statsd.send_to_socket = function(self, string)
+      self.sent_with = self.sent_with or {}
+      self.sent_with[#self.sent_with + 1] = string
+      table.sort(self.sent_with)
+      return #string
+    end
+  end)
+
+  it('split', function()
+    statsd.packet_size = 10
+    statsd:increment{'abc', 'efg'}
+    assert.same({'abc:1|c', 'efg:1|c'}, statsd.sent_with)
+  end)
+
+  it('small packet', function()
+    statsd.packet_size = 10
+    statsd:increment{'abcdefg', 'hijklmn'}
+    assert.same({'abcdefg:1|c', 'hijklmn:1|c'}, statsd.sent_with)
+  end)
+
+end)
