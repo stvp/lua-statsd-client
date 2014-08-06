@@ -1,3 +1,5 @@
+package.path = './spec/?.lua;../src/?.lua;'..package.path
+
 local Statsd = require "statsd"
 local statsd = nil
 

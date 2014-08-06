@@ -18,13 +18,13 @@ before_install:
   - sudo luarocks install luacov-coveralls --server=http://rocks.moonscript.org/dev
 
 install:
-  - sudo luarocks make statsd-2.0.0-1.rockspec
+  - sudo luarocks make rockspecs/statsd-2.0.0-1.rockspec
 
 script: 
-  - busted -c statsd_test.lua
+  - busted -c spec
 
 after_success:
-  - luacov-coveralls -i statsd
+  - luacov-coveralls -c spec/.luacov -i statsd
 
 notifications:
   email:
