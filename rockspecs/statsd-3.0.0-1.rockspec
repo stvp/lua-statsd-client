@@ -1,8 +1,8 @@
 package = "statsd"
-version = "2.0.0-1"
+version = "3.0.0-1"
 source = {
   url = "git://github.com/stvp/lua-statsd-client.git",
-  tag = "2.0.0"
+  tag = "3.0.0"
 }
 description = {
   summary = "Statsd client.",
