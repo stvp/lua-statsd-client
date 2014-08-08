@@ -30,6 +30,8 @@ local function make_statsd_message(self, stat, delta, kind, sample_rate)
 end
 
 local function send(self, stat, delta, kind, sample_rate, neg)
+  local packet_size = self.packet_size
+
   local msg
   local stat_type = type(stat)
   if stat_type == 'table' then sample_rate = delta end
@@ -39,7 +41,7 @@ local function send(self, stat, delta, kind, sample_rate, neg)
   end
 
   if stat_type == 'table' then
-    local t = {}
+    local t, size = {}, 0
     for s, v in pairs(stat) do
       if kind == 'c' then
         if type(s) == 'number' then
@@ -48,13 +50,23 @@ local function send(self, stat, delta, kind, sample_rate, neg)
         end
         v = neg and -v or v
       end
-      table.insert(t, (make_statsd_message(self, s, v, kind, sample_rate)))
+      msg = make_statsd_message(self, s, v, kind, sample_rate)
+      size = size + #msg
+
+      if t[1] and (size > packet_size) then
+        local msg = table.concat(t, "\n")
+        local ok, err = self:send_to_socket(msg)
+        if not ok then return nil, err end
+        t, size = {}, 0
+      end
+
+      t[#t + 1] = msg
     end
     msg = table.concat(t, "\n")
-    -- @todo check max udp packet size
   else
     msg = make_statsd_message(self, stat, delta, kind, sample_rate)
   end
+
   return self:send_to_socket(msg)
 end
 
@@ -116,7 +128,8 @@ return function(options)
 
   local host = options.host or "127.0.0.1"
   local port = options.port or 8125
-  local namespace = options.namespace or nil
+  local namespace  = options.namespace or nil
+  local packet_size = options.packet_size or 508 --  RFC791
 
   local udp = socket.udp()
   udp:setpeername(host, port)
@@ -124,6 +137,7 @@ return function(options)
   return {
     namespace = namespace,
     udp = udp,
+    packet_size = packet_size,
     gauge = gauge,
     counter = counter,
     increment = increment,
